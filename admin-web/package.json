@@ -1,0 +1,33 @@
+{
+  "name": "admin-web",
+  "private": true,
+  "sideEffects": false,
+  "scripts": {
+    "build": "remix build",
+    "dev": "sst-env -- remix dev",
+    "start": "remix-serve build"
+  },
+  "dependencies": {
+    "@aws-sdk/credential-provider-cognito-identity": "^3.130.0",
+    "@aws-sdk/credential-providers": "^3.130.0",
+    "@remix-run/node": "^1.6.5",
+    "@remix-run/react": "^1.6.5",
+    "@remix-run/serve": "^1.6.5",
+    "jwt-decode": "^3.1.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "^1.6.5",
+    "@remix-run/eslint-config": "^1.6.5",
+    "@serverless-stack/static-site-env": "^1.4.0",
+    "@types/google.accounts": "^0.0.2",
+    "@types/react": "^17.0.45",
+    "@types/react-dom": "^17.0.17",
+    "eslint": "^8.15.0",
+    "typescript": "^4.7.4"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
