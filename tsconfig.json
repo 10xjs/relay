@@ -1,4 +1,7 @@
 {
   "extends": "@tsconfig/node16/tsconfig.json",
-  "include": ["stacks"]
+  "compilerOptions": {
+    "lib": ["es2021"]
+  },
+  "include": ["stacks", "types", "resources"]
 }

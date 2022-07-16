@@ -1,5 +1,5 @@
 {
-  "name": "@relay/services",
+  "name": "services",
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
@@ -9,6 +9,7 @@
     "aws-sdk": "^2.1175.0",
     "electrodb": "^1.11.1",
     "graphql": "^16.5.0",
+    "tiny-invariant": "^1.2.0",
     "ulid": "^2.3.0"
   },
   "devDependencies": {

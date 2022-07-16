@@ -11,7 +11,7 @@
   "scripts": {
     "start": "sst start",
     "build": "sst build",
-    "deploy": "sst deploy --stage=production",
+    "deploy": "sst deploy --stage=staging",
     "remove": "sst remove",
     "console": "sst console",
     "typecheck": "tsc --noEmit",
@@ -19,9 +19,11 @@
   },
   "devDependencies": {
     "@serverless-stack/cli": "^1.4.0",
-    "@serverless-stack/resources": "^1.4.0",
+    "@serverless-stack/resources": "patch:@serverless-stack/resources@npm:1.4.0#.yarn/patches/@serverless-stack-resources-npm-1.4.0-1dbd6bbf24.patch",
     "@tsconfig/node16": "^1.0.3",
+    "@types/aws-cloudfront-function": "^1.0.2",
     "aws-cdk-lib": "2.24.0",
+    "tiny-invariant": "^1.2.0",
     "typescript": "^4.7.4",
     "vitest": "^0.18.0"
   },

@@ -54,4 +54,3 @@ export function create(title: string, url: string) {
 export async function list() {
   return ArticleEntity.query.primary({}).go();
 }
-

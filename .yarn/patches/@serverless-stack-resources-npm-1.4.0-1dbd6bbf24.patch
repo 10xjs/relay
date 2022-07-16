@@ -1,0 +1,63 @@
+diff --git a/assets/RemixSite/server-lambda/edge-server.js b/assets/RemixSite/server-lambda/edge-server.js
+index f4f504aef241c3ccd2e90776ea694d57e630ceca..6380109d8d29e51948b9ed9fb1dbf14ed6d8a042 100644
+--- a/assets/RemixSite/server-lambda/edge-server.js
++++ b/assets/RemixSite/server-lambda/edge-server.js
+@@ -156,7 +156,7 @@ function createCloudFrontEdgeRequestHandler(build) {
+ 
+   return async (event, _context) => {
+     const request = createNodeRequest(event);
+-    const response = await remixRequestHandler(request);
++    const response = await remixRequestHandler(request,{event});
+     const contentType = response.headers.get("Content-Type");
+     const isBase64Encoded = isBinaryType(contentType);
+ 
+diff --git a/assets/RemixSite/server-lambda/regional-server.js b/assets/RemixSite/server-lambda/regional-server.js
+index 337bc0cdd738d0267f881f5985a6ef4dcec979f8..9a8f299de7f4279ca4ff1778bd5c571fb232cbe9 100644
+--- a/assets/RemixSite/server-lambda/regional-server.js
++++ b/assets/RemixSite/server-lambda/regional-server.js
+@@ -161,7 +161,7 @@ const createAPIGatewayV2RequestHandler = (build) => {
+ 
+   return async (event) => {
+     const request = createRemixRequest(event);
+-    const response = await requestHandler(request);
++    const response = await requestHandler(request,{event});
+     return sendRemixResponse(response);
+   };
+ };
+diff --git a/dist/RemixSite.d.ts b/dist/RemixSite.d.ts
+index 7c206b8b66b01e5fbecdb50051c22b0038c4d656..6f79628069fddb780ff4ac27cf28247124f785fa 100644
+--- a/dist/RemixSite.d.ts
++++ b/dist/RemixSite.d.ts
+@@ -2,6 +2,7 @@ import { Construct } from "constructs";
+ import * as s3 from "aws-cdk-lib/aws-s3";
+ import * as route53 from "aws-cdk-lib/aws-route53";
+ import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
++import { HttpOriginProps } from "aws-cdk-lib/aws-cloudfront-origins";
+ import * as acm from "aws-cdk-lib/aws-certificatemanager";
+ import { SSTConstruct } from "./Construct.js";
+ import { BaseSiteDomainProps, BaseSiteCdkDistributionProps } from "./BaseSite.js";
+@@ -22,6 +23,11 @@ export interface RemixSiteProps {
+          * create the CDK `Distribution` internally.
+          */
+         distribution?: RemixCdkDistributionProps;
++        /**
++         * Pass in a value to override the default settings this construct uses to
++         * create the CDK `HttpOrigin` internally.
++         */
++        origin?: HttpOriginProps;
+         /**
+          * Override the default CloudFront cache policies created internally.
+          */
+diff --git a/dist/RemixSite.js b/dist/RemixSite.js
+index b817cbf2e55e76db3f7e090c8d9f8f32d4abffe3..466b732715846190211caddf790b1ddf1698db3d 100644
+--- a/dist/RemixSite.js
++++ b/dist/RemixSite.js
+@@ -708,7 +708,7 @@ export class RemixSite extends Construct {
+             this.createCloudFrontServerCachePolicy();
+         return {
+             viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+-            origin: new origins.HttpOrigin(Fn.parseDomainName(fnUrl.url)),
++            origin: new origins.HttpOrigin(Fn.parseDomainName(fnUrl.url),cdk?.origin),
+             allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
+             cachedMethods: cloudfront.CachedMethods.CACHE_GET_HEAD_OPTIONS,
+             compress: true,

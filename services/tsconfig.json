@@ -1,6 +1,6 @@
 {
   "extends": "../tsconfig.json",
-  "include": ["functions", "core"],
+  "include": ["functions", "core", "actions", "../types"],
   "compilerOptions": {
     "module": "esnext",
     "target": "es2017",
@@ -8,7 +8,7 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@relay/core/*": ["./core/*"]
+      "~/*": ["./*"]
     }
   }
 }

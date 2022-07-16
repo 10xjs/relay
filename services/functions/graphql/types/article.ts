@@ -1,4 +1,4 @@
-import { Article } from "@relay/core/article";
+import { Article } from "../../../core/article";
 import { builder } from "../builder";
 
 const ArticleType = builder
