@@ -14,7 +14,7 @@ export default function handleRequest(
     const originSecret = request.headers.get("x-cf-origin-secret");
 
     if (originSecret !== get("CLOUDFRONT_ORIGIN_SECRET")) {
-      return json({ message: "Forbidden" }, { status: 403 });
+      return json({ message: "Access denied" }, { status: 503 });
     }
   }
 

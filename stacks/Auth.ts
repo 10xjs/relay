@@ -14,6 +14,7 @@ import certificatemanager from "aws-cdk-lib/aws-certificatemanager";
 
 import { Dns } from "./Dns";
 import { get } from "./env";
+import { CloudfrontFunction } from "../resources/CloudfrontFunction";
 
 /**
  * AWS Secrets manager GenerateSecretString punctuation character set.
@@ -143,66 +144,143 @@ export function Auth({ app, stack }: StackContext) {
 
   const loadBalancer = new elasticloadbalancingv2.ApplicationLoadBalancer(
     stack,
-    "load-balancer",
+    "elb",
     {
       vpc,
       internetFacing: true,
     }
   );
 
-  const redirectListener = loadBalancer.addListener("redirect-listener", {
-    protocol: elasticloadbalancingv2.ApplicationProtocol.HTTP,
-    port: 80,
-    open: true,
-    defaultAction: elasticloadbalancingv2.ListenerAction.redirect({
-      port: "443",
-      protocol: elasticloadbalancingv2.ApplicationProtocol.HTTPS,
-      permanent: true,
-    }),
-  });
+  const loadBalancerDomain = `elb.${authDomain}`;
 
-  const certificate = new certificatemanager.Certificate(stack, "certificate", {
-    domainName: authDomain,
-    validation: certificatemanager.CertificateValidation.fromDns(zone),
-  });
+  const loadBalancerCertificate = new certificatemanager.Certificate(
+    stack,
+    "elb-certificate",
+    {
+      domainName: loadBalancerDomain,
+      validation: certificatemanager.CertificateValidation.fromDns(zone),
+    }
+  );
 
   const listener = loadBalancer.addListener("listener", {
     protocol: elasticloadbalancingv2.ApplicationProtocol.HTTPS,
     open: true,
-    certificates: [certificate],
+    certificates: [loadBalancerCertificate],
     // sslPolicy: elasticloadbalancingv2.SslPolicy.RECOMMENDED
   });
 
-  const targetGroup = listener.addTargets("targets", {
-    protocol: elasticloadbalancingv2.ApplicationProtocol.HTTP,
-    port: containerPort,
-    healthCheck: {
-      port: String(containerPort),
-      path: "/hello",
-    },
-    targets: [service],
+  const targetGroup = new elasticloadbalancingv2.ApplicationTargetGroup(
+    stack,
+    "target-group",
+    {
+      vpc,
+      protocol: elasticloadbalancingv2.ApplicationProtocol.HTTP,
+      port: containerPort,
+      healthCheck: {
+        port: String(containerPort),
+        path: "/hello",
+      },
+      targets: [service],
+    }
+  );
+
+  listener.addAction("forward-action", {
+    priority: 2,
+    conditions: [
+      elasticloadbalancingv2.ListenerCondition.httpHeader(
+        "x-cf-origin-secret",
+        [get("CLOUDFRONT_ORIGIN_SECRET")]
+      ),
+    ],
+    action: elasticloadbalancingv2.ListenerAction.forward([targetGroup]),
   });
 
-  new route53.ARecord(stack, "a-record", {
+  listener.addAction("access-denied-action", {
+    action: elasticloadbalancingv2.ListenerAction.fixedResponse(503, {
+      contentType: "text/plain",
+      messageBody: "Access denied",
+    }),
+  });
+
+  const loadBalancerTarget = route53.RecordTarget.fromAlias(
+    new targets.LoadBalancerTarget(loadBalancer)
+  );
+
+  new route53.ARecord(stack, "elb-a-record", {
     zone,
-    recordName: authDomain,
-    target: route53.RecordTarget.fromAlias(
-      new targets.LoadBalancerTarget(loadBalancer)
-    ),
+    recordName: loadBalancerDomain,
+    target: loadBalancerTarget,
     ttl: Duration.seconds(60),
   });
 
-  new route53.AaaaRecord(stack, "aaaa-record", {
+  new route53.AaaaRecord(stack, "elb-aaaa-record", {
+    zone,
+    recordName: loadBalancerDomain,
+    target: loadBalancerTarget,
+    ttl: Duration.seconds(60),
+  });
+
+  const distributionCertificate = new certificatemanager.Certificate(
+    stack,
+    "distribution-certificate",
+    {
+      domainName: authDomain,
+      validation: certificatemanager.CertificateValidation.fromDns(zone),
+    }
+  );
+
+  const viewerRequestFunction = new CloudfrontFunction(
+    stack,
+    "ViewerRequestFunction",
+    {
+      handler: "functions/cloudfront/viewerRequest",
+      define: {
+        "process.env.HOST": JSON.stringify(authDomain),
+      },
+    }
+  );
+
+  const distribution = new cloudfront.Distribution(stack, `distribution`, {
+    defaultBehavior: {
+      origin: new origins.HttpOrigin(loadBalancerDomain, {
+        customHeaders: {
+          "x-cf-origin-secret": get("CLOUDFRONT_ORIGIN_SECRET"),
+        },
+      }),
+      functionAssociations: viewerRequestFunction
+        ? [
+            {
+              eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+              function: viewerRequestFunction,
+            },
+          ]
+        : [],
+    },
+    domainNames: [authDomain],
+    certificate: distributionCertificate,
+  });
+
+  const distributionTarget = route53.RecordTarget.fromAlias(
+    new targets.CloudFrontTarget(distribution)
+  );
+
+  new route53.ARecord(stack, "distribution-a-record", {
     zone,
     recordName: authDomain,
-    target: route53.RecordTarget.fromAlias(
-      new targets.LoadBalancerTarget(loadBalancer)
-    ),
+    target: distributionTarget,
+    ttl: Duration.seconds(60),
+  });
+
+  new route53.AaaaRecord(stack, "distribution-aaaa-record", {
+    zone,
+    recordName: authDomain,
+    target: distributionTarget,
     ttl: Duration.seconds(60),
   });
 
   stack.addOutputs({
-    loadBalancerUrl: `http://${loadBalancer.loadBalancerDnsName}`,
+    loadBalancerUrl: `http://${loadBalancerDomain}`,
+    distributionUrl: `http://${distribution.domainName}`,
     url: `http://${authDomain}`,
   });
 

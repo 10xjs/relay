@@ -1,12 +1,4 @@
 {
-  "hosted-zone:account=814141588384:domainName=relaymaps.app:privateZone=false:region=us-west-1": {
-    "Id": "/hostedzone/Z00539152ZB97OB0MTB87",
-    "Name": "relaymaps.app."
-  },
-  "hosted-zone:account=814141588384:domainName=relaymaps.app:region=us-west-1": {
-    "Id": "/hostedzone/Z00539152ZB97OB0MTB87",
-    "Name": "relaymaps.app."
-  },
   "hosted-zone:account=814141588384:domainName=relaymaps.app:privateZone=false:region=us-east-1": {
     "Id": "/hostedzone/Z00539152ZB97OB0MTB87",
     "Name": "relaymaps.app."
