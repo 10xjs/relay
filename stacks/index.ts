@@ -3,6 +3,7 @@ import { Api } from "./Api";
 import { Auth } from "./Auth";
 import { Database } from "./Database";
 import { Dns } from "./Dns";
+import { Vpc } from "./Vpc";
 import { Web } from "./Web";
 
 export default function main(app: App) {
@@ -18,5 +19,11 @@ export default function main(app: App) {
     },
   });
 
-  app.stack(Dns).stack(Auth).stack(Database).stack(Api).stack(Web);
+  app
+    .stack(Dns)
+    // .stack(Vpc)
+    .stack(Auth)
+    .stack(Database)
+    .stack(Api)
+    .stack(Web);
 }

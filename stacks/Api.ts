@@ -10,7 +10,7 @@ import { Dns } from "./Dns";
 export function Api({ stack }: StackContext) {
   const db = use(Database);
   const { rootDomain, zone } = use(Dns);
-  const { auth } = use(Auth);
+  const {} = use(Auth);
 
   const api = new ApiConstruct(stack, "api", {
     customDomain: rootDomain
@@ -26,7 +26,7 @@ export function Api({ stack }: StackContext) {
           TABLE_NAME: db.tableName,
         },
       },
-      authorizer: "iam",
+      // authorizer: "iam",
     },
     routes: {
       // "POST /graphql": {
@@ -43,12 +43,10 @@ export function Api({ stack }: StackContext) {
       "GET /private": { function: "functions/private.main" },
       "GET /public": {
         function: "functions/public.main",
-        authorizer: "none",
+        // authorizer: "none",
       },
     },
   });
-
-  auth.attachPermissionsForAuthUsers(stack, [api]);
 
   stack.addOutputs({
     url: api.url,

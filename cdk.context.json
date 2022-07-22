@@ -1,0 +1,26 @@
+{
+  "hosted-zone:account=814141588384:domainName=relaymaps.app:privateZone=false:region=us-west-1": {
+    "Id": "/hostedzone/Z00539152ZB97OB0MTB87",
+    "Name": "relaymaps.app."
+  },
+  "hosted-zone:account=814141588384:domainName=relaymaps.app:region=us-west-1": {
+    "Id": "/hostedzone/Z00539152ZB97OB0MTB87",
+    "Name": "relaymaps.app."
+  },
+  "hosted-zone:account=814141588384:domainName=relaymaps.app:privateZone=false:region=us-east-1": {
+    "Id": "/hostedzone/Z00539152ZB97OB0MTB87",
+    "Name": "relaymaps.app."
+  },
+  "hosted-zone:account=814141588384:domainName=relaymaps.app:region=us-east-1": {
+    "Id": "/hostedzone/Z00539152ZB97OB0MTB87",
+    "Name": "relaymaps.app."
+  },
+  "availability-zones:account=814141588384:region=us-east-1": [
+    "us-east-1a",
+    "us-east-1b",
+    "us-east-1c",
+    "us-east-1d",
+    "us-east-1e",
+    "us-east-1f"
+  ]
+}

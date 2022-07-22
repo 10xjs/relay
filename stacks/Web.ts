@@ -1,5 +1,8 @@
 import { RemixSite, StackContext, use } from "@serverless-stack/resources";
 import { FunctionEventType } from "aws-cdk-lib/aws-cloudfront";
+import route53 from "aws-cdk-lib/aws-route53";
+import targets from "aws-cdk-lib/aws-route53-targets";
+import certificatemanager from "aws-cdk-lib/aws-certificatemanager";
 
 import { Api } from "./Api";
 import { Auth } from "./Auth";
@@ -9,7 +12,7 @@ import { CloudfrontFunction } from "../resources/CloudfrontFunction";
 
 export function Web({ app, stack }: StackContext) {
   const api = use(Api);
-  const { auth, authDomain } = use(Auth);
+  // const { auth, authDomain } = use(Auth);
   const { zone, rootDomain } = use(Dns);
 
   let viewerRequestFunction;
@@ -37,10 +40,10 @@ export function Web({ app, stack }: StackContext) {
       : undefined,
     environment: {
       API_URL: api.url,
-      USER_POOL_ID: auth.userPoolId,
-      IDENTITY_POOL_ID: auth.cognitoIdentityPoolId!,
-      USER_POOL_CLIENT_ID: auth.userPoolClientId,
-      USER_POOL_DOMAIN: authDomain,
+      // USER_POOL_ID: auth.userPoolId,
+      // IDENTITY_POOL_ID: auth.cognitoIdentityPoolId!,
+      // USER_POOL_CLIENT_ID: auth.userPoolClientId,
+      // USER_POOL_DOMAIN: authDomain,
       GOOGLE_CLIENT_ID: get("GOOGLE_CLIENT_ID"),
       CLOUDFRONT_ORIGIN_SECRET: get("CLOUDFRONT_ORIGIN_SECRET"),
       REGION: stack.region,

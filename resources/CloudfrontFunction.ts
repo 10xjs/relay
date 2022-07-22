@@ -44,6 +44,7 @@ export class CloudfrontFunction extends CfFunction {
       );
     }
 
+    // TODO: Bundle with esbuild.
     let code = readFileSync(require.resolve(resolve(srcPath, handler)), {
       encoding: "utf-8",
     });
