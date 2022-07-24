@@ -1,4 +1,4 @@
-import { StackContext } from "@serverless-stack/resources";
+import type { StackContext } from "@serverless-stack/resources";
 import { HostedZone } from "aws-cdk-lib/aws-route53";
 import invariant from "tiny-invariant";
 

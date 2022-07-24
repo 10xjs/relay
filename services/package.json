@@ -4,11 +4,14 @@
   "type": "module",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.130.0",
+    "@middy/core": "^3.1.0",
+    "@middy/http-cors": "^3.1.0",
     "@pothos/core": "^3.12.2",
     "@serverless-stack/node": "^1.4.0",
     "aws-sdk": "^2.1175.0",
     "electrodb": "^1.11.1",
     "graphql": "^16.5.0",
+    "supertokens-node": "^11.0.1",
     "tiny-invariant": "^1.2.0",
     "ulid": "^2.3.0"
   },

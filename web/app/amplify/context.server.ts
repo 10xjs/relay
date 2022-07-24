@@ -1,33 +1,33 @@
 import { Credentials } from "@aws-amplify/core";
 import type { AmplifyConfig } from "@aws-amplify/core/lib-esm/types";
 import { Amplify, API, Auth, withSSRContext } from "aws-amplify";
-import { get } from "~/config/env.server";
+// import { get } from "~/config/env.server";
 
 const config: AmplifyConfig = {
-  ssr: true,
-  Auth: {
-    mandatorySignIn: true,
-    region: get("REGION"),
-    userPoolId: get("USER_POOL_ID"),
-    identityPoolId: get("IDENTITY_POOL_ID"),
-    userPoolWebClientId: get("USER_POOL_CLIENT_ID"),
-    oauth: {
-      responseType: "code",
-      clientId: get("USER_POOL_CLIENT_ID"),
-      domain: get("USER_POOL_DOMAIN"),
-      // redirectSignIn: `${protocol}//${url.host}/login`,
-      // redirectSignOut: `${protocol}//${url.host}`,
-    },
-  },
-  API: {
-    endpoints: [
-      {
-        name: "relay-api",
-        region: get("REGION"),
-        endpoint: get("API_URL"),
-      },
-    ],
-  },
+  // ssr: true,
+  // Auth: {
+  //   mandatorySignIn: true,
+  //   region: get("REGION"),
+  //   userPoolId: get("USER_POOL_ID"),
+  //   identityPoolId: get("IDENTITY_POOL_ID"),
+  //   userPoolWebClientId: get("USER_POOL_CLIENT_ID"),
+  //   oauth: {
+  //     responseType: "code",
+  //     clientId: get("USER_POOL_CLIENT_ID"),
+  //     domain: get("USER_POOL_DOMAIN"),
+  //     // redirectSignIn: `${protocol}//${url.host}/login`,
+  //     // redirectSignOut: `${protocol}//${url.host}`,
+  //   },
+  // },
+  // API: {
+  //   endpoints: [
+  //     {
+  //       name: "relay-api",
+  //       region: get("REGION"),
+  //       endpoint: get("API_URL"),
+  //     },
+  //   ],
+  // },
 };
 
 export interface AmplifySSRContext {

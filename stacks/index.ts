@@ -1,13 +1,12 @@
-import { App } from "@serverless-stack/resources";
-import { Api } from "./Api";
-import { Auth } from "./Auth";
-import { Database } from "./Database";
+import type { App } from "@serverless-stack/resources";
+
 import { Dns } from "./Dns";
-import { Vpc } from "./Vpc";
-import { Web } from "./Web";
+import { Email } from "./Email";
+import { Kratos } from "./Kratos";
+import { Network } from "./Network";
 
 export default function main(app: App) {
-  if (app.stage === "dev") {
+  if (app.stage === "dev" || app.local) {
     app.setDefaultRemovalPolicy("destroy");
   }
 
@@ -20,10 +19,12 @@ export default function main(app: App) {
   });
 
   app
+    //
     .stack(Dns)
-    // .stack(Vpc)
-    .stack(Auth)
-    .stack(Database)
-    .stack(Api)
-    .stack(Web);
+    .stack(Email)
+    .stack(Network)
+    .stack(Kratos);
+  // .stack(Database)
+  // .stack(Api);
+  // .stack(Web);
 }

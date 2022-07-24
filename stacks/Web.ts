@@ -1,14 +1,15 @@
-import { RemixSite, StackContext, use } from "@serverless-stack/resources";
+import type { StackContext } from "@serverless-stack/resources";
+import { RemixSite, use } from "@serverless-stack/resources";
+import certificatemanager from "aws-cdk-lib/aws-certificatemanager";
 import { FunctionEventType } from "aws-cdk-lib/aws-cloudfront";
 import route53 from "aws-cdk-lib/aws-route53";
 import targets from "aws-cdk-lib/aws-route53-targets";
-import certificatemanager from "aws-cdk-lib/aws-certificatemanager";
 
+import { CloudfrontFunction } from "../resources/CloudfrontFunction";
 import { Api } from "./Api";
-import { Auth } from "./Auth";
 import { Dns } from "./Dns";
 import { get } from "./env";
-import { CloudfrontFunction } from "../resources/CloudfrontFunction";
+// import { Auth } from "./Kratos";
 
 export function Web({ app, stack }: StackContext) {
   const api = use(Api);

@@ -1,5 +1,4 @@
-import type { AmplifyConfig } from "@aws-amplify/core/lib-esm/types";
-import type { LoaderFunction, MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -7,21 +6,40 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
 } from "@remix-run/react";
-import { Amplify } from "aws-amplify";
-import { useEffect } from "react";
-import { getAmplifyContext } from "./amplify/context.server";
+import { useEffect, useState } from "react";
+import SuperTokens, { SuperTokensWrapper } from "supertokens-auth-react";
+import Session from "supertokens-auth-react/recipe/session";
+import ThirdPartyPasswordless from "supertokens-auth-react/recipe/thirdpartypasswordless";
 
-export interface LoaderData {
-  config: AmplifyConfig;
+if (typeof window !== "undefined") {
+  SuperTokens.init({
+    appInfo: {
+      appName: "SuperTokens Demo App", // TODO: Your app name
+      // apiDomain:
+      //   "https://047ecdd109f511ed88a50b078005eb17-us-east-1.aws.supertokens.io:3571",
+      apiDomain: "auth.dev.relaymaps.app", // TODO: Change to your app's API domain
+      websiteDomain: "http://localhost:3000", // TODO: Change to your app's website domain
+      apiBasePath: "",
+    },
+    recipeList: [
+      ThirdPartyPasswordless.init({
+        emailVerificationFeature: {
+          mode: "REQUIRED",
+        },
+        signInUpFeature: {
+          providers: [
+            ThirdPartyPasswordless.Facebook.init(),
+            ThirdPartyPasswordless.Google.init(),
+            // ThirdPartyPasswordless.Apple.init(),
+          ],
+        },
+        contactMethod: "EMAIL_OR_PHONE",
+      }),
+      Session.init(),
+    ],
+  });
 }
-
-export const loader: LoaderFunction = async ({ request, context }) => {
-  const ctx = await getAmplifyContext(request);
-  const data: LoaderData = { config: ctx.config };
-  return data;
-};
 
 export const meta: MetaFunction = ({ data }) => ({
   charset: "utf-8",
@@ -30,22 +48,18 @@ export const meta: MetaFunction = ({ data }) => ({
 });
 
 export default function App() {
-  const { config } = useLoaderData();
-
   useEffect(() => {
-    console.log(config);
-    Amplify.configure({
-      ...config,
-      Auth: {
-        ...config.Auth,
-        oauth: {
-          ...config.Auth.oauth,
-          redirectSignIn: `${window.location.protocol}//${window.location.host}/login`,
-          redirectSignOut: `${window.location.protocol}//${window.location.host}`,
-        },
-      },
-    });
-
+    // Amplify.configure({
+    //   ...config,
+    //   Auth: {
+    //     ...config.Auth,
+    //     oauth: {
+    //       ...config.Auth.oauth,
+    //       redirectSignIn: `${window.location.protocol}//${window.location.host}/login`,
+    //       redirectSignOut: `${window.location.protocol}//${window.location.host}`,
+    //     },
+    //   },
+    // });
     // Auth.currentSession().then(
     //   (session) => {
     //     console.log({ session });
@@ -54,20 +68,22 @@ export default function App() {
     //     console.log({ error });
     //   }
     // );
-  }, [config]);
+  }, []);
 
   return (
-    <html lang="en">
-      <head>
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        <Outlet />
-        <ScrollRestoration />
-        <Scripts />
-        <LiveReload />
-      </body>
-    </html>
+    <SuperTokensWrapper>
+      <html lang="en">
+        <head>
+          <Meta />
+          <Links />
+        </head>
+        <body>
+          <Outlet />
+          <ScrollRestoration />
+          <Scripts />
+          <LiveReload />
+        </body>
+      </html>
+    </SuperTokensWrapper>
   );
 }

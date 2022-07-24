@@ -1,6 +1,14 @@
 {
   "extends": "../tsconfig.json",
-  "include": ["functions", "core", "actions", "../types"],
+  "include": [
+    "functions",
+    "core",
+    "actions",
+    "../types",
+    "auth/actions/auth",
+    "auth/identity.ts",
+    "auth/functions/postAuthentication.ts"
+  ],
   "compilerOptions": {
     "module": "esnext",
     "target": "es2017",
